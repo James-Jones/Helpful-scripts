@@ -1,0 +1,5 @@
+
+swizzle.py:
+    A python script which can combine multiple swizzles (e.g. apply rabg to bgra giving barg).
+    Rgba and xyzw notations are accepted. It will also apply the swizzle to a vec4 if you give it one.
+    Use --help to see the arguments.

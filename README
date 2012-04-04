@@ -3,3 +3,13 @@ swizzle.py:
     A python script which can combine multiple swizzles (e.g. apply rabg to bgra giving barg).
     Rgba and xyzw notations are accepted. It will also apply the swizzle to a vec4 if you give it one.
     Use --help to see the arguments.
+
+fromAssimp.py:
+    Converts assimp scene's to a JSON format or binary format. Requires PyAssimp from the 'port' directory of
+    the assimp SDK.
+    Use --help to see the arguments.
+
+fwrap.py:
+    Creates a C header file containing a const char array of the contents of a given file.
+    This is a mechanism to avoid reading a file from disk, but does come at a cost of having this array always present.
+    Use --help to see the arguments.

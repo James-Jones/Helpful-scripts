@@ -1,15 +1,15 @@
 import sys
-from optparse import OptionParser
+import argparse
 import ConfigParser
 
 # Returns OptionParser
 def setupCmdOptions():
-    parser = OptionParser()
+    parser = argparse.ArgumentParser(description='Swizzle combiner.')
 
-    parser.add_option("-s", "--swizzles", dest="in_swizzle", default="",
+    parser.add_argument("-s", "--swizzles", dest="in_swizzle", default="", required=True,
                 help="REQUIRED. Space separated list of swizzles e.g. -s \"RGBA BGRA ABRG\"")
-    parser.add_option("-v", "--vector", dest="in_vector", default="",
-                help="OPTIONAL. A vec4 to apply the swizzle to e.g. -s \"1.2 4.6 2.0 11.3\"")
+    parser.add_argument("-v", "--vector", dest="in_vector", default="",
+                help="A vec4 to apply the swizzle to e.g. -s \"1.2 4.6 2.0 11.3\"")
 
     return parser
 
@@ -84,39 +84,26 @@ def combineSwizzle(swizzleX, swizzleY):
 # Returns a list
 def applySwizzle(swizzle, vector):
     vecsplit = vector.split()
-    return vecsplit[getIndex(swizzle, 0)], " ", vecsplit[getIndex(swizzle, 1)], " ",
-            vecsplit[getIndex(swizzle, 2)], " ", vecsplit[getIndex(swizzle, 3)]
-
-
-# Returns void
-def testCombineSwizzle():
-    result = combineSwizzle('BGRA', 'ARGB')
-    expected = 'A', 'B', 'G', 'R'
-    if result != expected:
-        print "Internal correctness test failed", "Expected ", expected, " got ", result
-        sys.exit(1)
+    return vecsplit[getIndex(swizzle, 0)], " ", vecsplit[getIndex(swizzle, 1)], " ", \
+		vecsplit[getIndex(swizzle, 2)], " ", vecsplit[getIndex(swizzle, 3)]
 
 # Parse parameters
 parser = setupCmdOptions()
-(options, args) = parser.parse_args()
-
-if not options.in_swizzle:
-    print "Swizzle list not provided"
-    sys.exit(1)
+options = parser.parse_args()
 
 # Script accepts upper and lower case input.#
 # Convert to uppercase here so we only have to deal with uppercase from here on out.
 options.in_swizzle = options.in_swizzle.upper()
 
-# Put self tests for correctness here
-testCombineSwizzle()
-
 swizzleList = options.in_swizzle.split()
 
 accumulatedSwizzle = ['R', 'G', 'B', 'A']
+
 for s in swizzleList:
-    accumulatedSwizzle = combineSwizzle(accumulatedSwizzle, s)
-    # Uncomment for debugging => print "Current swizzle is ", ''.join(accumulatedSwizzle)
+	if len(s) != 4:
+		print "All swizzles must be vec4"
+		sys.exit(1)
+	accumulatedSwizzle = combineSwizzle(accumulatedSwizzle, s)
 
 finalSwizzle = ['R', 'G', 'B', 'A']
 

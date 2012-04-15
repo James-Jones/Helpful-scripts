@@ -1,44 +1,36 @@
-from optparse import OptionParser
+import argparse
 import os.path
 import types
 
-parser = OptionParser()
-parser.add_option("-f", "--file", dest="filename", help="input file", metavar="FILE")
-(options, args) = parser.parse_args()
+parser = argparse.ArgumentParser(description='File wrapper.')
 
-if type(options.filename) is types.NoneType : print("file not specified"); exit()
+parser.add_argument("-f", "--file", dest="filename", required=True, help="REQUIRED. input file")
+parser.add_argument("-n", "--name", dest="arrayname", help="name of array")
+
+options = parser.parse_args()
+
+inputfile = open(options.filename, "r")
 
 basename, extension = os.path.splitext(options.filename)
-
-print("File: " + basename)
-print("Ext: " + extension)
-
-(head, tail) = os.path.split(options.filename);
-
-print("Head: " + head)
-print("Tail: " + tail)
-
-basetail = os.path.splitext(tail)[0]
-print("Tail without ext: " + basetail)
-
 outputfilename = basename + ".h"
-inputfile = open(options.filename, "r")
-arrayname = "psz" + basetail + "_" + extension
 
-# numlines = len(inputfile.readlines());
+if options.arrayname:
+	arrayname = options.arrayname
+else:
+	(head, tail) = os.path.split(options.filename);
+	basetail = os.path.splitext(tail)[0]
+	postfix = extension.strip('.')
+	arrayname = "psz" + "_" + basetail + "_" + postfix
 
-headerfile = "#include <memfilesys.h>\n\n"
+headerfile = "const char* " + arrayname + "[] = {\n"
 
-headerfile = headerfile + "const char* " + arrayname + "[] = {\n"
+lines = inputfile.readlines()
 
-line = inputfile.readline()
-linelen = len(line);
-line = line[:linelen-1];
-while line:
-    headerfile = headerfile + "\"" + line + "\"\n";
-    line = inputfile.readline();
+for line in lines:
+	line = line[:len(line)-1];
+	headerfile = headerfile + "\t\"" + line + "\"" + "\n";
 
-headerfile = headerfile + "\n}\n"
+headerfile = headerfile + "};\n"
 
 # register with file system
 

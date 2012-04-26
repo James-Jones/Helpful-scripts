@@ -13,3 +13,6 @@ fwrap.py:
     Creates a C header file containing a const char array of the contents of a given file.
     This is a mechanism to avoid reading a file from disk, but does come at a cost of having this array always present.
     Use --help to see the arguments.
+
+tabsToSpaces.rb:
+	Converts tabs in files into 4 spaces.

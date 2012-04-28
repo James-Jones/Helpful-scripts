@@ -1,20 +1,17 @@
 from pyassimp import pyassimp
-from optparse import OptionParser
+import argparse
 import os
 import types
 import array
 import json
 
 # Define the command line arguments
-parser = OptionParser()
-parser.add_option("-f", "--file", dest="filename", help="input file", metavar="FILE")
-parser.add_option("-j", "--json", dest="bJSON", help="output in JSON")
+parser = argparse.ArgumentParser(description='Convert assimp meshes.')
+parser.add_argument("-f", "--file", dest="filename", required=True, help="input file")
+parser.add_argument("-j", "--json", dest="bJSON", help="output in JSON")
 
 # Parse the arguments
-(options, args) = parser.parse_args()
-
-# Make sure the input filename has been specified
-if type(options.filename) is types.NoneType : print("file not specified"); exit()
+options = parser.parse_args()
 
 # From include/aiPostProcess.h
 aiProcess_CalcTangentSpace = 0x1

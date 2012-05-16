@@ -12,7 +12,10 @@ options = parser.parse_args()
 inputfile = open(options.filename, "r")
 
 basename, extension = os.path.splitext(options.filename)
-outputfilename = basename + ".h"
+if extension:
+	outputfilename = basename + "_" + extension.strip('.') + ".h"
+else:
+	outputfilename = basename + ".h"
 
 if options.cvarname:
 	cvarname = options.cvarname
@@ -32,7 +35,10 @@ lines = inputfile.readlines()
 headerfile = headerfile + "\"";
 for line in lines:
 	line = line[:len(line)-1];
-	headerfile = headerfile + "\t" + line + "\\" + "\n";
+	
+	processed = line.replace('\"', '\\"');
+	
+	headerfile = headerfile + "\t" + processed + "\\" + "\n";
 
 headerfile = headerfile + "\"};\n"
 

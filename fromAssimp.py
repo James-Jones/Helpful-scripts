@@ -40,7 +40,7 @@ def getBoundingBox(mesh):
     result.extend(boxmax)
     return result
 
-def writeMeshJSON(mesh):
+def writeMeshJSON(mesh, material):
     # The output filename is the input filename with a .bin extension
     basename, extension = os.path.splitext(options.filename)
     (head, tail) = os.path.split(options.filename);
@@ -65,6 +65,13 @@ def writeMeshJSON(mesh):
     for vtx in enumerate(mesh.vertices):
         vtxarray.extend(vtx[1])
 
+    # Texcoords
+    
+    texcarray = array.array('f')
+    
+    for texc in enumerate(mesh.texcoords[0]):
+        texcarray.extend(texc[1])
+
     # Indices
     idxarray = array.array('H')
 
@@ -72,9 +79,37 @@ def writeMeshJSON(mesh):
         idxarray.extend(face[1].indices)
 
     bbox = getBoundingBox(mesh)
+    
+    materialName = pyassimp.aiGetMaterialString(material, ["?mat.name",0,0])
+    diffuseTexName = pyassimp.aiGetMaterialString(material, ["$tex.file",1,0])
+    try:
+        diffuseColour = pyassimp.aiGetMaterialFloatArray(material, ["$clr.diffuse",0,0])
+    except:
+        print "No diffuse colour"
+    ambientColour = pyassimp.aiGetMaterialFloatArray(material, ["$clr.ambient",0,0])
+    specularColour = pyassimp.aiGetMaterialFloatArray(material, ["$clr.specular",0,0])
+    try:
+        emissiveColour = pyassimp.aiGetMaterialFloatArray(material, ["$clr.emissive",0,0])
+    except:
+        print "No emissive colour"
+    shininess = pyassimp.aiGetMaterialFloatArray(material, ["$mat.shininess",0,0])
+    try:
+        reflectivity = pyassimp.aiGetMaterialFloatArray(material, ["$mat.reflectivity",0,0])
+    except:
+        print "No reflectivity"
+    try:
+        shininessStength = pyassimp.aiGetMaterialFloatArray(material, ["$mat.shinpercent",0,0])
+    except:
+        print "No shininess strength"
 
     # Format as a list
-    mylist = {"bndbox": bbox, "vtxpos": list(vtxarray), "idx": list(idxarray)}
+    mylist = {  "bndbox": bbox,
+                "vtxpos": list(vtxarray),
+                "texcoord": list(texcarray),
+                "idx": list(idxarray),
+                "ambient": ambientColour,
+                "diffise": diffuseColour,
+                "diffuseTex": diffuseTexName}
     
     # dummylist = {"vtxpos" : [0.0, 0.5, 0.0, -0.5, -0.5, 0.0, 0.5, -0.5, 0.0], "idx" : [0, 1, 2] }
 
@@ -117,7 +152,7 @@ def writeMesh(mesh):
     # Indices
     idxarray = array.array('H')
     
-    for face in enumerate(mesh.faces):
+    for face in enumerate(mesh.faces):	
         idxarray.extend(face[1].indices)
 
     idxarray.tofile(outputfile)
@@ -127,10 +162,10 @@ def writeMesh(mesh):
 
 def main():
     scene = pyassimp.load(options.filename, aiProcessFlags)
-    
+
     for index, mesh in enumerate(scene.meshes):
         if(options.bJSON):
-            writeMeshJSON(mesh)
+            writeMeshJSON(mesh, scene.materials[mesh.mMaterialIndex])
         else:
             writeMesh(mesh)
     

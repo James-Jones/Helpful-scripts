@@ -8,7 +8,7 @@ import json
 # Define the command line arguments
 parser = argparse.ArgumentParser(description='Convert assimp meshes.')
 parser.add_argument("-f", "--file", dest="filename", required=True, help="input file")
-parser.add_argument("-j", "--json", dest="bJSON", help="output in JSON")
+parser.add_argument("-j", "--json", dest="bJSON", action='store_true', help="output in JSON")
 
 # Parse the arguments
 options = parser.parse_args()
@@ -40,7 +40,7 @@ def getBoundingBox(mesh):
     result.extend(boxmax)
     return result
 
-def writeMeshJSON(mesh, material):
+def writeMeshJSON(mesh, material, transform):
     # The output filename is the input filename with a .bin extension
     basename, extension = os.path.splitext(options.filename)
     (head, tail) = os.path.split(options.filename);
@@ -72,11 +72,35 @@ def writeMeshJSON(mesh, material):
     for texc in enumerate(mesh.texcoords[0]):
         texcarray.extend(texc[1])
 
+    # Normals
+    
+    nrmarray = array.array('f')
+    
+    for nrm in enumerate(mesh.normals):
+        nrmarray.extend(nrm[1])
+        
     # Indices
     idxarray = array.array('H')
 
     for face in enumerate(mesh.faces):
         idxarray.extend(face[1].indices)
+
+    matrix = [transform.a1,
+    transform.a2,
+    transform.a3,
+    transform.a4,
+    transform.b1,
+    transform.b2,
+    transform.b3,
+    transform.b4,
+    transform.c1,
+    transform.c2,
+    transform.c3,
+    transform.c4,
+    transform.d1,
+    transform.d2,
+    transform.d3,
+    transform.d4]
 
     bbox = getBoundingBox(mesh)
     
@@ -106,7 +130,9 @@ def writeMeshJSON(mesh, material):
     mylist = {  "bndbox": bbox,
                 "vtxpos": list(vtxarray),
                 "texcoord": list(texcarray),
+                "normal": list(nrmarray),
                 "idx": list(idxarray),
+                "transform": matrix,
                 "ambient": ambientColour,
                 "diffise": diffuseColour,
                 "diffuseTex": diffuseTexName}
@@ -116,8 +142,7 @@ def writeMeshJSON(mesh, material):
     # Convert python list to JSON and write to file
     json.dump(mylist, outputfile, indent=4)
 
-    # Closing brace
-    #outputfile.write("\n}\n");
+    outputfile.write("\n");
 
     # Cleanup
     outputfile.close()
@@ -165,7 +190,7 @@ def main():
 
     for index, mesh in enumerate(scene.meshes):
         if(options.bJSON):
-            writeMeshJSON(mesh, scene.materials[mesh.mMaterialIndex])
+            writeMeshJSON(mesh, scene.materials[mesh.mMaterialIndex], scene.mRootNode[0].mTransformation)
         else:
             writeMesh(mesh)
     

@@ -1,7 +1,5 @@
 =begin
-Write a function which given 3 positive non-zero numbers finds the Lowest Common Multiple of the 3.
-(Lowest Common Multiple is the smallest number into which every member of a group of numbers will
-divide exactly, e.g. the LCM of 2, 3 and 4 is 12) 
+Given positive non-zero numbers find the Lowest Common Multiple.
 =end
 
 def gcm(a, b)

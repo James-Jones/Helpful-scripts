@@ -1,7 +1,6 @@
 =begin
-Write a function which takes 3 points in 2D space vL0, vL1, vP, and
-returns +1 or -1 depending on whether the point vP is on the right (+1)
-or left (-1) of the line from L0 to L1.
+Return +1 or -1 depending on whether a point is on the right (+1)
+or left (-1) side of a line.
 =end
 
 Struct.new("Point", :x, :y)

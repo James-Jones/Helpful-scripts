@@ -1,6 +1,5 @@
 =begin
-Write a function to generate a checksum for an area of memory.
-This type of function can easily be used to verify such things as data load/save etc.
+Generate a checksum. Checksums can be used to verify data has not been modified.
 =end
 
 def checksum(buffer)

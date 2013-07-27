@@ -9,18 +9,18 @@ DirRIGHT = (0x0008)
 	
 def rotateControllerACW(control)
 	
-	leftSh = (control << 1) & 0xF
+	shift = (control << 1) & 0xF
 	wrap = (control >> 3) & 0xF #3 being numbits(4)-rotate_amount(1)
 	
-	return leftSh | wrap
+	return shift | wrap
 end
 
 def rotateControllerCW(control)
 	
-	leftSh = (control >> 1) & 0xF
+	shift = (control >> 1) & 0xF
 	wrap = (control << 3) & 0xF #3 being numbits(4)-rotate_amount(1)
 	
-	return leftSh | wrap
+	return shift | wrap
 end
 
 if ARGV[0] == "ACW"

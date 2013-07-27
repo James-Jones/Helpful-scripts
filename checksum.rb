@@ -14,7 +14,7 @@ def checksum(buffer)
 				crc = crc >> 1
 			end
 		end
-		crc #final W
+		crc #final value of 'index' in table
 	}
 	
 	result = 0xFFFFFFFF

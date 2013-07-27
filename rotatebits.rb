@@ -6,11 +6,11 @@ DirUP = (0x0001)
 DirDOWN	= (0x0004)
 DirLEFT	= (0x0002)
 DirRIGHT = (0x0008)
-
+	
 def rotateControllerACW(control)
 	
 	leftSh = (control << 1) & 0xF
-	wrap = (control >> 3) & 0xF #3 being numbits-1
+	wrap = (control >> 3) & 0xF #3 being numbits(4)-rotate_amount(1)
 	
 	return leftSh | wrap
 end
@@ -18,7 +18,7 @@ end
 def rotateControllerCW(control)
 	
 	leftSh = (control >> 1) & 0xF
-	wrap = (control << 3) & 0xF #3 being numbits-1
+	wrap = (control << 3) & 0xF #3 being numbits(4)-rotate_amount(1)
 	
 	return leftSh | wrap
 end
